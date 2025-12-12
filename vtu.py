@@ -32,7 +32,7 @@ def get_latest_result_url():
         result_link = soup.find(
             'a', 
             href=re.compile(r"vtu.ac.in/.*[cC][bB][cC][sS].*"),
-            text=re.compile(r'click here for.* cbcs.* results', re.IGNORECASE)
+            string=re.compile(r'click here for.* cbcs.* results', re.IGNORECASE)
         )
         
         if result_link and result_link.has_attr('href'):
@@ -54,35 +54,55 @@ def get_latest_result_url():
     print("Could not automatically determine the result URL.")
     return None
 
-# URLs
-BASE_URL = get_latest_result_url()
-if not BASE_URL:
-    # Ask user to input the URL manually as a last resort
-    BASE_URL = input("Please manually enter the full result URL (e.g., https://results.vtu.ac.in/JJEcbcs25): ").strip()
+# URLs - only set these when running directly, not when importing
+if __name__ == "__main__":
+    BASE_URL = get_latest_result_url()
     if not BASE_URL:
-        print("No result URL provided. Exiting.")
-        exit()
+        # Ask user to input the URL manually as a last resort
+        BASE_URL = input("Please manually enter the full result URL (e.g., https://results.vtu.ac.in/JJEcbcs25): ").strip()
+        if not BASE_URL:
+            print("No result URL provided. Exiting.")
+            exit()
 
-RESULT_URL = f"{BASE_URL}/index.php"
+    RESULT_URL = f"{BASE_URL}/index.php"
+else:
+    # When importing, use dummy values to avoid input prompts
+    BASE_URL = "https://results.vtu.ac.in/dummy"
+    RESULT_URL = f"{BASE_URL}/index.php"
 
 def preprocess_captcha(image):
     """Preprocess CAPTCHA image for better OCR results."""
     img_array = np.array(image.convert('RGB'))
-    gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
     
-    # Adaptive thresholding can be more robust
-    thresh = cv2.adaptiveThreshold(
-        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-    )
-    
-    # Invert colors so text is black on white background
-    thresh = cv2.bitwise_not(thresh)
-
-    # Remove noise
-    kernel = np.ones((1, 1), np.uint8)
-    processed = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-    
-    return processed
+    if cv2 is not None:
+        # Use OpenCV for advanced processing
+        gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
+        
+        # Adaptive thresholding can be more robust
+        thresh = cv2.adaptiveThreshold(
+            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        )
+        
+        # Invert colors so text is black on white background
+        thresh = cv2.bitwise_not(thresh)
+        
+        # Remove noise
+        kernel = np.ones((1, 1), np.uint8)
+        processed = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+        
+        return processed
+    else:
+        # Basic preprocessing without OpenCV
+        # Convert to grayscale manually
+        gray = np.dot(img_array[...,:3], [0.2989, 0.5870, 0.1140]).astype(np.uint8)
+        
+        # Simple thresholding
+        thresh = (gray > 128).astype(np.uint8) * 255
+        
+        # Invert colors
+        thresh = 255 - thresh
+        
+        return thresh
 
 def solve_captcha_automatically(image):
     """Attempt to solve CAPTCHA using OCR."""
