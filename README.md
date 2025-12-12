@@ -4,7 +4,13 @@ A Python script to fetch student results from the Visvesvaraya Technological Uni
 
 ## Description
 
-This script automates the process of fetching semester results from the official VTU results portal. It handles CAPTCHA by downloading the image and prompting the user to enter the text.
+This script automates the process of fetching semester results from the official VTU results portal. It can handle CAPTCHA in two ways:
+- **Manual mode**: Downloads the CAPTCHA image and prompts you to enter the text
+- **Auto mode**: Attempts to automatically read the CAPTCHA using OCR (Optical Character Recognition)
+
+**Note about SSL**: Due to certificate issues with the VTU website, SSL verification is disabled in this script. This may generate warnings but is necessary for the script to work with VTU's current setup.
+
+**Note about Auto CAPTCHA**: The auto CAPTCHA feature uses OCR technology which may not always be 100% accurate. If it fails, the script will fall back to manual entry.
 
 ## Prerequisites
 
@@ -13,6 +19,10 @@ This script automates the process of fetching semester results from the official
   - `requests`
   - `beautifulsoup4`
   - `Pillow`
+  - `pytesseract` (for auto CAPTCHA solving)
+  - `opencv-python` (for image processing)
+  - `numpy` (for image processing)
+- Tesseract OCR installed on your system (for auto CAPTCHA solving)
 
 ## Installation
 
@@ -24,7 +34,11 @@ This script automates the process of fetching semester results from the official
    ```bash
    cd vtu-result-scraper
    ```
-3. Install the required libraries:
+3. Install Tesseract OCR (required for auto CAPTCHA solving):
+   - **Windows**: Download installer from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
+   - **Mac**: `brew install tesseract`
+   - **Linux**: `sudo apt install tesseract-ocr`
+4. Install the required Python libraries:
    ```bash
    pip install -r requirements.txt
    ```
@@ -36,16 +50,19 @@ This script automates the process of fetching semester results from the official
    python vtu.py
    ```
 2. Choose an option:
-   - **Option 1**: Single USN (for your own result)
-   - **Option 2**: Multiple USNs (for fetching results for friends)
-3. For single USN:
-   - Enter your University Seat Number (USN) when prompted.
+   - **Option 1**: Single USN (for your own result) - Manual CAPTCHA entry
+   - **Option 2**: Multiple USNs (for fetching results for friends) - Manual CAPTCHA entry
+   - **Option 3**: Single USN with Auto CAPTCHA - Attempts to automatically solve CAPTCHA
+   - **Option 4**: Multiple USNs with Auto CAPTCHA - Attempts to automatically solve CAPTCHA
+3. For manual CAPTCHA options (1 & 2):
+   - Enter your University Seat Number(s) when prompted.
    - An image file named `captcha.jpg` will be created and opened. Enter the CAPTCHA text from the image.
    - The script will then fetch and display your results.
-4. For multiple USNs:
-   - Enter multiple USNs separated by commas (e.g., `1VA23CS001,1VA23CS002,1VA23CS003`)
-   - An image file named `captcha.jpg` will be created and opened. Enter the CAPTCHA text from the image.
-   - The script will fetch and display results for all USNs with a summary at the end.
+4. For auto CAPTCHA options (3 & 4):
+   - Enter your University Seat Number(s) when prompted.
+   - The script will attempt to automatically read the CAPTCHA using OCR.
+   - If auto-solving fails, it will fall back to manual entry.
+   - The script will then fetch and display your results.
 
 ## How It Works
 
