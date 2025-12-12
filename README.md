@@ -35,9 +35,17 @@ This script automates the process of fetching semester results from the official
    ```bash
    python vtu.py
    ```
-2. Enter your University Seat Number (USN) when prompted.
-3. An image file named `captcha.jpg` will be created and opened. Enter the CAPTCHA text from the image.
-4. The script will then fetch and display your results.
+2. Choose an option:
+   - **Option 1**: Single USN (for your own result)
+   - **Option 2**: Multiple USNs (for fetching results for friends)
+3. For single USN:
+   - Enter your University Seat Number (USN) when prompted.
+   - An image file named `captcha.jpg` will be created and opened. Enter the CAPTCHA text from the image.
+   - The script will then fetch and display your results.
+4. For multiple USNs:
+   - Enter multiple USNs separated by commas (e.g., `1VA23CS001,1VA23CS002,1VA23CS003`)
+   - An image file named `captcha.jpg` will be created and opened. Enter the CAPTCHA text from the image.
+   - The script will fetch and display results for all USNs with a summary at the end.
 
 ## How It Works
 
