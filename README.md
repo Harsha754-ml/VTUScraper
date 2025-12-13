@@ -28,7 +28,7 @@ This script automates the process of fetching semester results from the official
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Harsha754-ml/VTUScraper.git
    ```
 2. Navigate to the project directory:
    ```bash
